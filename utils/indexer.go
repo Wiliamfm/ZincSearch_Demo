@@ -1,7 +1,11 @@
 package indexer
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -48,6 +52,14 @@ func SetEmails(path string) models.Emails {
 	return emails
 }
 
+func SetToJson(emails models.Emails) []byte {
+	emailsJson, err := json.Marshal(emails)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return emailsJson
+}
+
 func setFile(path string) models.File {
 	file, err := os.Stat(path)
 	data, err2 := os.ReadFile(path)
@@ -55,4 +67,15 @@ func setFile(path string) models.File {
 		log.Fatal(err)
 	}
 	return models.File{FileName: file.Name(), Content: string(data)}
+}
+
+func LoadData(body []byte) bool {
+	responseBody := bytes.NewBuffer(body)
+	//resp, err := http.Post("http://localhost:4080/api/_bulkV2", "application/json", responseBody)
+	resp, err := http.Post("http://localhost:4080/api/test/_doc", "application/json", responseBody)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(resp)
+	return true
 }
