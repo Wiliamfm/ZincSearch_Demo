@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	indexer "github.com/Wiliamfm/ZincSearch_Demo/utils"
@@ -8,5 +9,12 @@ import (
 
 func main() {
 	path := os.Args[1]
-	indexer.SetEmails(path)
+	emails := indexer.SetEmails(path)
+	for _, email := range emails.Emails {
+		fmt.Println(email.Username, len(email.MailFolders))
+		for folder, files := range email.MailFolders {
+			fmt.Println("\t", folder)
+			fmt.Println("\t\t", files)
+		}
+	}
 }
