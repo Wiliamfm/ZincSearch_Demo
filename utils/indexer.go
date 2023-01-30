@@ -12,7 +12,7 @@ import (
 func SetEmails(path string) models.Emails {
 	emails := models.Emails{}
 	err := filepath.WalkDir(path, func(path string, info os.DirEntry, err error) error {
-		email := models.Email{MailFolders: map[string][]string{}}
+		email := models.Email{MailFolders: map[string][]models.File{}}
 		path = filepath.ToSlash(path)
 		basePath := filepath.Base(path)
 		if err != nil {
@@ -32,9 +32,10 @@ func SetEmails(path string) models.Emails {
 					return err
 				}
 				if _, ok := email.MailFolders[folder]; !ok {
-					email.MailFolders[folder] = make([]string, 0)
+					email.MailFolders[folder] = make([]models.File, 0)
 				}
-				email.MailFolders[folder] = append(email.MailFolders[folder], info.Name())
+				file := setFile(path)
+				email.MailFolders[folder] = append(email.MailFolders[folder], file)
 				emails.Emails[i] = email
 			}
 		}
@@ -45,4 +46,13 @@ func SetEmails(path string) models.Emails {
 		log.Fatal(err)
 	}
 	return emails
+}
+
+func setFile(path string) models.File {
+	file, err := os.Stat(path)
+	data, err2 := os.ReadFile(path)
+	if err != nil || file.IsDir() || err2 != nil {
+		log.Fatal(err)
+	}
+	return models.File{FileName: file.Name(), Content: string(data)}
 }

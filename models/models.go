@@ -6,7 +6,7 @@ type Emails struct {
 
 type Email struct {
 	Username    string
-	MailFolders map[string][]string
+	MailFolders map[string][]File
 }
 
 type File struct {

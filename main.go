@@ -14,7 +14,9 @@ func main() {
 		fmt.Println(email.Username, len(email.MailFolders))
 		for folder, files := range email.MailFolders {
 			fmt.Println("\t", folder)
-			fmt.Println("\t\t", files)
+			for _, file := range files {
+				fmt.Println(file.FileName)
+			}
 		}
 	}
 }
