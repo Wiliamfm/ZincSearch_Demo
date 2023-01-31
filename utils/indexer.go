@@ -3,7 +3,7 @@ package indexer
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -69,13 +69,33 @@ func setFile(path string) models.File {
 	return models.File{FileName: file.Name(), Content: string(data)}
 }
 
-func LoadData(body []byte) bool {
-	responseBody := bytes.NewBuffer(body)
-	//resp, err := http.Post("http://localhost:4080/api/_bulkV2", "application/json", responseBody)
-	resp, err := http.Post("http://localhost:4080/api/test/_doc", "application/json", responseBody)
+func LoadDataBulkV2(emails models.Emails, url, username, password string) bool {
+	data := models.RequestData{Index: "emails", Records: emails.Emails}
+	jsonData, err := json.Marshal(data)
+	//fmt.Println(string(jsonData))
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(resp)
+	body := bytes.NewBuffer(jsonData)
+	req, err := http.NewRequest("POST", url, body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.SetBasicAuth(username, password)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Fatal(err)
+	}
+	bodyResponse, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	switch {
+	case resp.StatusCode == 400:
+		log.Fatal("Bad Request: ", string(bodyResponse))
+	case resp.StatusCode != 200:
+		log.Fatal("Wrong request: ", resp.Status)
+	}
 	return true
 }

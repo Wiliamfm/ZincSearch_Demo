@@ -13,3 +13,8 @@ type File struct {
 	FileName string
 	Content  string
 }
+
+type RequestData struct {
+	Index   string
+	Records []Email
+}
