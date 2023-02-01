@@ -32,6 +32,7 @@ func printEmails(emails []models.Email) {
 			fmt.Println("Folder: ", k)
 			for _, file := range v {
 				fmt.Println("\tFiles:\t", file.FileName)
+				//fmt.Println("Content:\n", file.Content)
 			}
 		}
 	}

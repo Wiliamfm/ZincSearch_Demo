@@ -48,7 +48,12 @@ func loadEmail(email models.Email, path string) models.Email {
 func addFile(email models.Email, path string) models.Email {
 	folder := filepath.Dir(path)
 	fileName := filepath.Base(path)
-	file := models.File{FileName: fileName, Content: "Read file"}
+	fileContent, err := os.ReadFile(path)
+	if err != nil {
+		log.Fatal("Error reading file", err)
+	}
+	content := string(fileContent[:])
+	file := models.File{FileName: fileName, Content: content}
 	/*
 		for mailFolder, _ := range email.MailFolders {
 			if folder == mailFolder {
