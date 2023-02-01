@@ -13,6 +13,54 @@ import (
 	"github.com/Wiliamfm/ZincSearch_Demo/models"
 )
 
+func SetEmailsV2(path string) []models.Email {
+	emails := make([]models.Email, 0)
+	files, err := os.ReadDir(path)
+	if err != nil {
+		log.Fatal("Error reading dirs", err)
+	}
+	for _, file := range files {
+		if !file.IsDir() {
+			log.Fatalf("File found in mailfolder: %s; file not handled", file.Name())
+		}
+		folderPath := path + "/" + file.Name()
+		email := models.Email{Username: file.Name(), MailFolders: make(map[string][]models.File)}
+		emails = append(emails, loadEmail(email, folderPath))
+	}
+	return emails
+}
+
+func loadEmail(email models.Email, path string) models.Email {
+	items, err := os.ReadDir(path)
+	if err != nil {
+		log.Fatalf("Error reading folders of %s:\n%+v", email.Username, err)
+	}
+	for _, item := range items {
+		if item.IsDir() {
+			email = loadEmail(email, path+"/"+item.Name())
+		} else {
+			email = addFile(email, path+"/"+item.Name())
+		}
+	}
+	return email
+}
+
+func addFile(email models.Email, path string) models.Email {
+	folder := filepath.Dir(path)
+	fileName := filepath.Base(path)
+	file := models.File{FileName: fileName, Content: "Read file"}
+	/*
+		for mailFolder, _ := range email.MailFolders {
+			if folder == mailFolder {
+				email.MailFolders[folder] = append(email.MailFolders[folder], file)
+				return email
+			}
+		}
+	*/
+	email.MailFolders[folder] = append(email.MailFolders[folder], file)
+	return email
+}
+
 func SetEmails(path string) models.Emails {
 	emails := models.Emails{}
 	err := filepath.WalkDir(path, func(path string, info os.DirEntry, err error) error {
