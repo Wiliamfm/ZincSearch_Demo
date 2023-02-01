@@ -14,6 +14,16 @@ type File struct {
 	Content  string
 }
 
+type FileV2 struct {
+	Folder  string
+	Content string
+}
+
+type RequestDataV2 struct {
+	Index   string
+	Records []FileV2
+}
+
 type RequestData struct {
 	Index   string
 	Records []Email
