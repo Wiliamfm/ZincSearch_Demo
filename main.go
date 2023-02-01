@@ -18,20 +18,20 @@ var heapprofile = flag.String("heapprofile", "heap.prof", "write memory profile 
 
 func main() {
 	flag.Parse()
-	profiles()
+	//profiles()
 	path := os.Args[1] + "/maildir"
 	//emails := indexer.SetEmails(path)
 	//listEmails := indexer.SetEmailsV2("/home/william/Downloads/enron_mail_test/maildir")
 	listEmails := indexer.SetEmailsV2(path)
-	emails := models.Emails{Emails: listEmails}
+	//emails := models.Emails{Emails: listEmails}
+	if indexer.LoadDataBulkV2V2(listEmails, "http://localhost:4080/api/_bulkv2", "admin", "Complexpass#123") {
+		fmt.Println("Data loaded")
+	}
 	/*
-		if indexer.LoadDataBulkV2V2(listEmails, "http://localhost:4080/api/_bulkv2", "admin", "Complexpass#123") {
+		if indexer.LoadDataBulkV2(emails, "http://localhost:4080/api/_bulkv2", "admin", "Complexpass#123") {
 			fmt.Println("Data loaded")
 		}
 	*/
-	if indexer.LoadDataBulkV2(emails, "http://localhost:4080/api/_bulkv2", "admin", "Complexpass#123") {
-		fmt.Println("Data loaded")
-	}
 }
 
 func printEmails(emails []models.Email) {

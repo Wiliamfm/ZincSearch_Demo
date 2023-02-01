@@ -14,9 +14,9 @@ import (
 	"github.com/Wiliamfm/ZincSearch_Demo/models"
 )
 
-func SetEmailsV2(path string) []models.Email {
-	emails := make([]models.Email, 0)
-	//emails := make([]models.FileV2, 0) //V2
+func SetEmailsV2(path string) []models.FileV2 {
+	//emails := make([]models.Email, 0)
+	emails := make([]models.FileV2, 0) //V2
 	files, err := os.ReadDir(path)
 	if err != nil {
 		log.Fatal("Error reading dirs", err)
@@ -26,9 +26,11 @@ func SetEmailsV2(path string) []models.Email {
 			log.Fatalf("File found in mailfolder: %s; file not handled", file.Name())
 		}
 		folderPath := path + "/" + file.Name()
-		email := models.Email{Username: file.Name(), MailFolders: make(map[string][]models.File)}
-		emails = append(emails, loadEmail(email, folderPath))
-		//emails = loadEmailV2(emails, folderPath) //V2
+		/*
+			email := models.Email{Username: file.Name(), MailFolders: make(map[string][]models.File)}
+			emails = append(emails, loadEmail(email, folderPath))
+		*/
+		emails = loadEmailV2(emails, folderPath) //V2
 	}
 	return emails
 }
