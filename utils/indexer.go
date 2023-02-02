@@ -33,7 +33,7 @@ func loadUserDir(path string) []string {
 func SetEmails(path string) []models.File {
 	emails := make([]models.File, 0)
 	for _, dir := range loadUserDir(path) {
-		emails = append(emails, setFiles(emails, dir)...)
+		emails = setFiles(emails, dir)
 	}
 	return emails
 }
