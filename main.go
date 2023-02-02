@@ -19,13 +19,15 @@ var heapprofile = flag.String("heapprofile", "heap.prof", "write memory profile 
 func main() {
 	flag.Parse()
 	//profiles()
-	path := os.Args[1] + "/maildir"
-	//emails := indexer.SetEmails(path)
-	//listEmails := indexer.SetEmailsV2("/home/william/Downloads/enron_mail_test/maildir")
-	listEmails := indexer.SetEmailsV2(path)
-	//emails := models.Emails{Emails: listEmails}
-	printFiles(listEmails)
+	path := os.Args[1]
+	emails := indexer.SetEmails(path)
+	printFiles(emails)
 	/*
+		emails := indexer.SetEmails(path)
+		listEmails := indexer.SetEmailsV2("/home/william/Downloads/enron_mail_test/maildir")
+		listEmails := indexer.SetEmailsV2(path)
+		emails := models.Emails{Emails: listEmails}
+		printFiles(listEmails)
 		if indexer.LoadDataBulkV2V2(listEmails, "http://localhost:4080/api/_bulkv2", "admin", "Complexpass#123") {
 			fmt.Println("Data loaded")
 		}
@@ -35,24 +37,14 @@ func main() {
 	*/
 }
 
-func printFiles(files []models.FileV2) {
+func printFiles(files []models.File) {
+	///*
 	for _, file := range files {
 		fmt.Println(file.Folder)
 		//fmt.Println("Content:\t", file.Content)
 	}
-}
-
-func printEmails(emails []models.Email) {
-	for _, email := range emails {
-		fmt.Println(email.Username)
-		for k, v := range email.MailFolders {
-			fmt.Println("Folder: ", k)
-			for _, file := range v {
-				fmt.Println("\tFiles:\t", file.FileName)
-				//fmt.Println("Content:\n", file.Content)
-			}
-		}
-	}
+	//*/
+	fmt.Println(len(files))
 }
 
 func profiles() {
