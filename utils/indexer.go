@@ -30,9 +30,36 @@ func SetEmailsV2(path string) []models.FileV2 {
 			email := models.Email{Username: file.Name(), MailFolders: make(map[string][]models.File)}
 			emails = append(emails, loadEmail(email, folderPath))
 		*/
-		emails = loadEmailV2(emails, folderPath) //V2
+		//emails = loadEmailV2(emails, folderPath) //V2
+		emailsChanel := loadEmailGoRoutine(&emails, folderPath)
+		emails = append(emails, <-emailsChanel...)
 	}
 	return emails
+}
+
+func loadEmailGoRoutine(emails *[]models.FileV2, path string) <-chan []models.FileV2 {
+	fmt.Println(path)
+	emailsChanel := make(chan []models.FileV2)
+	items, err := os.ReadDir(path)
+	go func() {
+		if err != nil {
+			log.Fatalf("Error reading folders of %s:\n%+v", path, err)
+		}
+		for _, item := range items {
+			if item.IsDir() {
+				emailsChanel <- loadEmailV2(*emails, path+"/"+item.Name())
+			} else {
+				fileContent, err := os.ReadFile(path + "/" + item.Name())
+				if err != nil {
+					log.Fatal("Error reading file ", err)
+				}
+				content := string(fileContent[:])
+				file := models.FileV2{Folder: path + "/" + item.Name(), Content: content}
+				*emails = append(*emails, file)
+			}
+		}
+	}()
+	return emailsChanel
 }
 
 func loadEmailV2(emails []models.FileV2, path string) []models.FileV2 {
@@ -130,14 +157,6 @@ func SetEmails(path string) models.Emails {
 		log.Fatal(err)
 	}
 	return emails
-}
-
-func SetToJson(emails models.Emails) []byte {
-	emailsJson, err := json.Marshal(emails)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return emailsJson
 }
 
 func setFile(path string) models.File {

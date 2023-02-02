@@ -24,14 +24,22 @@ func main() {
 	//listEmails := indexer.SetEmailsV2("/home/william/Downloads/enron_mail_test/maildir")
 	listEmails := indexer.SetEmailsV2(path)
 	//emails := models.Emails{Emails: listEmails}
-	if indexer.LoadDataBulkV2V2(listEmails, "http://localhost:4080/api/_bulkv2", "admin", "Complexpass#123") {
-		fmt.Println("Data loaded")
-	}
+	printFiles(listEmails)
 	/*
-		if indexer.LoadDataBulkV2(emails, "http://localhost:4080/api/_bulkv2", "admin", "Complexpass#123") {
+		if indexer.LoadDataBulkV2V2(listEmails, "http://localhost:4080/api/_bulkv2", "admin", "Complexpass#123") {
 			fmt.Println("Data loaded")
 		}
+			if indexer.LoadDataBulkV2(emails, "http://localhost:4080/api/_bulkv2", "admin", "Complexpass#123") {
+				fmt.Println("Data loaded")
+			}
 	*/
+}
+
+func printFiles(files []models.FileV2) {
+	for _, file := range files {
+		fmt.Println(file.Folder)
+		//fmt.Println("Content:\t", file.Content)
+	}
 }
 
 func printEmails(emails []models.Email) {
