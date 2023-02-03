@@ -17,3 +17,4 @@
 /.vscode/
 json_data.json
 /client/node_modules/
+/client/output.css
