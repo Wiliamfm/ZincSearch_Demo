@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Wiliamfm/ZincSearch_Demo/models"
+	"github.com/Wiliamfm/ZincSearch_Demo/server/models"
 )
 
 func loadUserDir(path string) []string {

@@ -1,4 +1,4 @@
-package main
+package indexer
 
 import (
 	"flag"
@@ -8,8 +8,7 @@ import (
 	"runtime"
 	"runtime/pprof"
 
-	"github.com/Wiliamfm/ZincSearch_Demo/models"
-	indexer "github.com/Wiliamfm/ZincSearch_Demo/utils"
+	"github.com/Wiliamfm/ZincSearch_Demo/server/models"
 )
 
 var cpuprofile = flag.String("cpuprofile", "cpu.prof", "Write cpu profile to file")
@@ -20,10 +19,10 @@ func main() {
 	flag.Parse()
 	//profiles()
 	path := os.Args[1]
-	emails := indexer.SetEmails(path)
+	emails := SetEmails(path)
 	fmt.Println(len(emails))
 	//printFiles(emails)
-	if indexer.LoadDataBulkV2(emails, "http://localhost:4080/api/_bulkv2", "admin", "Complexpass#123") {
+	if LoadDataBulkV2(emails, "http://localhost:4080/api/_bulkv2", "admin", "Complexpass#123") {
 		fmt.Println("Data loaded")
 	}
 }
