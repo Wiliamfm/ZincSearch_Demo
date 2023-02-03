@@ -31,21 +31,44 @@ func loadUserDir(path string) []string {
 }
 
 func SetEmails(path string) []models.File {
+	//emails := make([]models.File, 0)
+	//emailsChannel := loadEmails(path)
+	//emails = append(emails, <-emailsChannel...)
+	return loadEmails(path)
+}
+
+func loadEmails(path string) []models.File { //<-chan []models.File {
 	emails := make([]models.File, 0)
-	for _, dir := range loadUserDir(path) {
-		emails = setFiles(emails, dir)
+	emailsChannel := make(chan []models.File)
+	dirs := loadUserDir(path)
+	//var wg sync.WaitGroup
+	//wg.Add(len(dirs))
+	for _, dir := range dirs {
+		fmt.Println("Launch go: ", dir)
+		go func(dir string) {
+			//defer wg.Done()
+			emailsChannel <- setFiles(dir)
+		}(dir)
+		//emails = setFiles(emails, dir)
+	}
+	//wg.Wait()
+	for range dirs {
+		emails = append(emails, <-emailsChannel...)
 	}
 	return emails
 }
 
-func setFiles(emails []models.File, path string) []models.File {
+func setFiles(path string) []models.File {
+	//fmt.Println(path)
+	emails := make([]models.File, 0)
 	folders, err := os.ReadDir(path)
 	if err != nil {
 		log.Fatalf("Error loading dir: %s: %+v", path, err)
 	}
 	for _, folder := range folders {
 		if folder.IsDir() {
-			emails = setFiles(emails, path+"/"+folder.Name())
+			//emails = setFiles(path + "/" + folder.Name())
+			emails = append(emails, setFiles(path+"/"+folder.Name())...)
 		} else {
 			emails = append(emails, addFile(path+"/"+folder.Name()))
 		}
@@ -61,76 +84,6 @@ func addFile(path string) models.File {
 	}
 	file.Content = string(fileContent[:])
 	return file
-}
-
-func SetEmailsV2(path string) []models.File {
-	//emails := make([]models.Email, 0)
-	emails := make([]models.File, 0) //V2
-	files, err := os.ReadDir(path)
-	if err != nil {
-		log.Fatal("Error reading dirs", err)
-	}
-	for _, file := range files {
-		if !file.IsDir() {
-			log.Fatalf("File found in mailfolder: %s; file not handled", file.Name())
-		}
-		folderPath := path + "/" + file.Name()
-		/*
-			email := models.Email{Username: file.Name(), MailFolders: make(map[string][]models.File)}
-			emails = append(emails, loadEmail(email, folderPath))
-		*/
-		//emails = loadEmailV2(emails, folderPath) //V2
-		emailsChanel := loadEmailGoRoutine(&emails, folderPath)
-		emails = append(emails, <-emailsChanel...)
-	}
-	return emails
-}
-
-func loadEmailGoRoutine(emails *[]models.File, path string) <-chan []models.File {
-	fmt.Println(path)
-	emailsChanel := make(chan []models.File)
-	items, err := os.ReadDir(path)
-	go func() {
-		if err != nil {
-			log.Fatalf("Error reading folders of %s:\n%+v", path, err)
-		}
-		for _, item := range items {
-			if item.IsDir() {
-				emailsChanel <- loadEmailV2(*emails, path+"/"+item.Name())
-			} else {
-				fileContent, err := os.ReadFile(path + "/" + item.Name())
-				if err != nil {
-					log.Fatal("Error reading file ", err)
-				}
-				content := string(fileContent[:])
-				file := models.File{Folder: path + "/" + item.Name(), Content: content}
-				*emails = append(*emails, file)
-			}
-		}
-	}()
-	return emailsChanel
-}
-
-func loadEmailV2(emails []models.File, path string) []models.File {
-	//fmt.Println(path)
-	items, err := os.ReadDir(path)
-	if err != nil {
-		log.Fatalf("Error reading folders of %s:\n%+v", path, err)
-	}
-	for _, item := range items {
-		if item.IsDir() {
-			emails = loadEmailV2(emails, path+"/"+item.Name())
-		} else {
-			fileContent, err := os.ReadFile(path + "/" + item.Name())
-			if err != nil {
-				log.Fatal("Error reading file ", err)
-			}
-			content := string(fileContent[:])
-			file := models.File{Folder: path + "/" + item.Name(), Content: content}
-			emails = append(emails, file)
-		}
-	}
-	return emails
 }
 
 func LoadDataBulkV2(emails []models.File, url, username, password string) bool {
