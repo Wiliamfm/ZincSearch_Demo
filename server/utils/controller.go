@@ -14,10 +14,11 @@ import (
 var cpuprofile = flag.String("cpuprofile", "cpu.prof", "Write cpu profile to file")
 var memprofile = flag.String("memprofile", "mem.prof", "write memory profile to `file`")
 var heapprofile = flag.String("heapprofile", "heap.prof", "write memory profile to `file`")
+var goRoutineprofile = flag.String("goroutineprofile", "goroutine.prof", "Write goroutine profile to `file`")
 
 func Index(path string) bool {
 	flag.Parse()
-	//profiles()
+	profiles()
 	emails := SetEmails(path)
 	fmt.Println(len(emails))
 	//printFiles(emails)
@@ -65,5 +66,16 @@ func profiles() {
 			log.Fatal("could not start CPU profile: ", err)
 		}
 		defer f.Close() // error handling omitted for example
+	}
+
+	if *goRoutineprofile != "" {
+		f, err := os.Create(*goRoutineprofile)
+		if err != nil {
+			log.Fatal("could not create goroutine profile: ", err)
+		}
+		defer f.Close() // error handling omitted for example
+		if err := pprof.Lookup("goroutine").WriteTo(f, 0); err != nil {
+			log.Fatal("could not write goroutine profile: ", err)
+		}
 	}
 }
