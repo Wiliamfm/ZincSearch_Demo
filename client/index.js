@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
             //"Content",
             "Original Email"
          ]);
+         const pageClass = ref("")
 
          function submit(e) {
             e.preventDefault()
