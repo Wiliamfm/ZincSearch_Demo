@@ -1,4 +1,5 @@
-import { createApp, ref, reactive } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+import { createApp, ref, reactive } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
+
 document.addEventListener("DOMContentLoaded", () => {
    console.log("Working")
    const app = createApp({
@@ -11,7 +12,14 @@ document.addEventListener("DOMContentLoaded", () => {
          ])
          const selected = ref("any")
          const inputSearch = ref("")
-         const data = ref({})
+         const data = ref([])
+         const headers = ref([
+            "From",
+            "To",
+            "Subject",
+            //"Content",
+            "Original Email"
+         ]);
 
          function submit(e) {
             e.preventDefault()
@@ -22,10 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
             makeSearch(data.value)
                .then(response => response.json())
                .then(search => {
-                  let emails = parseContent(search["hits"]["hits"]);
-                  console.log(emails)
-                  //inputSearch.value = "";
-                  //selected.value = "any"
+                  inputSearch.value = "";
+                  selected.value = "any"
+                  data.value = parseContent(search["hits"]["hits"]);
                })
                .catch(err => {
                   console.error("Could not make search: ", err)
@@ -36,12 +43,14 @@ document.addEventListener("DOMContentLoaded", () => {
             options,
             selected,
             inputSearch,
+            headers,
+            data,
             submit
          }
       }
    })
 
-   app.mount('#form')
+   app.mount('#body')
 })
 
 function makeSearch(data) {
@@ -58,6 +67,7 @@ function parseContent(emails) {
    const fromRegex = /^From: .*$/m;
    const toRegex = /^To: .*$/m;
    const subjectRegex = /^Subject: .*$/m;
+   const headersRegex = /^\w+(-\w+)*:\s+.*$/gm;
    const re = /^\w+: /;
    let parseEmails = [];
    emails.forEach(content => {
@@ -65,17 +75,21 @@ function parseContent(emails) {
       let from = fromRegex.exec(msg);
       let to = toRegex.exec(msg);
       let subject = subjectRegex.exec(msg);
+      //let headers = headersRegex.exec(msg)
       if (from == null || from.length != 1) {
          from = ["null: null"]
       }
       if (to == null || to.length != 1) {
          to = ["null: null"]
       }
-      if (subject = null || subject.length != 1) {
+      if (subject == null || subject.length != 1) {
          subject = ["null: null"]
       }
+      msg = msg.replaceAll(/\\n{2,}/g, "");
+      console.log(msg);
+      //msg = msg.replaceAll(headersRegex, "").trim()
       parseEmails.push({
-         From: re[Symbol.replace](from[0], ""),
+         from: re[Symbol.replace](from[0], ""),
          to: re[Symbol.replace](to[0], ""),
          subject: re[Symbol.replace](subject[0], ""),
          content: msg
