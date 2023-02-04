@@ -31,13 +31,6 @@ func loadUserDir(path string) []string {
 }
 
 func SetEmails(path string) []models.File {
-	//emails := make([]models.File, 0)
-	//emailsChannel := loadEmails(path)
-	//emails = append(emails, <-emailsChannel...)
-	return loadEmails(path)
-}
-
-func loadEmails(path string) []models.File { //<-chan []models.File {
 	emails := make([]models.File, 0)
 	emailsChannel := make(chan []models.File)
 	dirs := loadUserDir(path)

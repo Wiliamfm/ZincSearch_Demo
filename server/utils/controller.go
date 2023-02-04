@@ -15,16 +15,13 @@ var cpuprofile = flag.String("cpuprofile", "cpu.prof", "Write cpu profile to fil
 var memprofile = flag.String("memprofile", "mem.prof", "write memory profile to `file`")
 var heapprofile = flag.String("heapprofile", "heap.prof", "write memory profile to `file`")
 
-func main() {
+func Index(path string) bool {
 	flag.Parse()
 	//profiles()
-	path := os.Args[1]
 	emails := SetEmails(path)
 	fmt.Println(len(emails))
 	//printFiles(emails)
-	if LoadDataBulkV2(emails, "http://localhost:4080/api/_bulkv2", "admin", "Complexpass#123") {
-		fmt.Println("Data loaded")
-	}
+	return LoadDataBulkV2(emails, "http://localhost:4080/api/_bulkv2", "admin", "Complexpass#123")
 }
 
 func printFiles(files []models.File) {
