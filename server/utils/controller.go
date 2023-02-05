@@ -22,7 +22,7 @@ func Index(path string) bool {
 	emails := SetEmails(path)
 	fmt.Println(len(emails))
 	//printFiles(emails)
-	return LoadDataBulkV2(emails, "http://localhost:4080/api/_bulkv2", "admin", "Complexpass#123")
+	return LoadDataBulkV2(emails, "http://zinc:4080/api/_bulkv2", "admin", "Complexpass#123")
 }
 
 func printFiles(files []models.File) {

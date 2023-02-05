@@ -29,7 +29,8 @@ func main() {
 	r.Route("/zincsearch", func(r chi.Router) {
 		r.Post("/", search)
 	})
-	path := os.Args[1]
+	//path := os.Args[1]
+	path := os.Getenv("mails-file")
 	if !indexer.Index(path) {
 		log.Fatal("Could not load emails to ZincSearch")
 	}
@@ -55,7 +56,7 @@ func search(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Println(string(jsonData))
-	req, err := http.NewRequest("POST", "http://localhost:4080/api/emails/_search", bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("POST", "http://zinc:4080/api/emails/_search", bytes.NewBuffer(jsonData))
 	if err != nil {
 		sendError(err, w, 500)
 		return
