@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"runtime/pprof"
 
-	"github.com/Wiliamfm/ZincSearch_Demo/server/models"
+	"github.com/Wiliamfm/ZincSearch_Demo/models"
 )
 
 var cpuprofile = flag.String("cpuprofile", "cpu.prof", "Write cpu profile to file")

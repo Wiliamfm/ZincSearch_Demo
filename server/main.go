@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Wiliamfm/ZincSearch_Demo/server/models"
-	indexer "github.com/Wiliamfm/ZincSearch_Demo/server/utils"
+	models "github.com/Wiliamfm/ZincSearch_Demo/models"
+	indexer "github.com/Wiliamfm/ZincSearch_Demo/utils"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
